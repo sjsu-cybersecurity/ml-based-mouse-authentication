@@ -1,0 +1,3 @@
+[submodule "data/Mouse-Dynamics-Challenge"]
+	path = data/Mouse-Dynamics-Challenge
+	url = https://github.com/balabit/Mouse-Dynamics-Challenge

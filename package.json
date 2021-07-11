@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/sjsu-cybersecurity/ai-powered-browser-lock-extension/issues"
   },
-  "homepage": "https://github.com/sjsu-cybersecurity/ai-powered-browser-lock-extension#readme"
+  "homepage": "https://github.com/sjsu-cybersecurity/ai-powered-browser-lock-extension#readme",
+  "devDependencies": {
+    "csvtojson": "^2.0.10"
+  }
 }

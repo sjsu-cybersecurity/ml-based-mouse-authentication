@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build:jpeg-images": "node scripts/convert-mouse-dynamics-csv-data-to-jpeg-images.js",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +19,11 @@
   },
   "homepage": "https://github.com/sjsu-cybersecurity/ai-powered-browser-lock-extension#readme",
   "devDependencies": {
-    "csvtojson": "^2.0.10"
+    "csvtojson": "^2.0.10",
+    "eslint": "^7.31.0"
+  },
+  "dependencies": {
+    "canvas": "^2.8.0",
+    "lodash": "^4.17.21"
   }
 }

@@ -15,5 +15,5 @@ $ npm install
 #### convert-mouse-dynamics-csv-data-to-jpeg-images.js
 It creates training files in JSON format in `./dist/trainig_files/jpeg`
 ```bash
-$ npm run jpeg-images
+$ npm run build:jpeg-images
 ```

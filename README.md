@@ -12,8 +12,8 @@ $ npm install
 ```
 
 ### Scripts
-#### create-json-training-files.js
-It creates training files in JSON format in `./dist/data/trainig_files`
-```js
-$ node ./script/create-json-training-files.js
+#### convert-mouse-dynamics-csv-data-to-jpeg-images.js
+It creates training files in JSON format in `./dist/trainig_files/jpeg`
+```bash
+$ npm run jpeg-images
 ```

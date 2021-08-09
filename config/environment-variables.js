@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const createEnvironmentVariables = () => {
+    const ML_MODELS_DIR = path.join(__dirname, '../dist/models');
     const JPEG_TRAINING_DATA_DEST_DIR = path.join(__dirname, '../dist/training_files/jpeg');
     const JPEG_TEST_DATA_DEST_DIR = path.join(__dirname, '../dist/test_files/jpeg');
     const TRAINING_DATA_DIR = path.join(__dirname, '../data/Mouse-Dynamics-Challenge/training_files');
@@ -37,7 +38,11 @@ const createEnvironmentVariables = () => {
     }
 
     return {
-        NUMBER_OF_OPERATIONS: process.env.NUMBER_OF_OPERATIONS || 100,
+        NUMBER_OF_OPERATIONS: process.env.NUMBER_OF_OPERATIONS || 500,
+        JPEG_IMAGE_WIDTH: 100,
+        JPEG_IMAGE_HEIGHT: 100,
+        JPEG_IMAGE_CHANNELS: 3,
+        LEGAL_USER: process.env.LEGAL_USER || 'user7',
         JPEG_TRAINING_DATA_DEST_DIR,
         TRAINING_DATA_DIR,
         TRAINING_DATA_USER_DIR,
@@ -46,6 +51,7 @@ const createEnvironmentVariables = () => {
         TEST_DATA_DIR,
         TEST_DATA_USER_DIR,
         TEST_DATA_USER_SESSION_FILES,
+        ML_MODELS_DIR,
     };
 };
 

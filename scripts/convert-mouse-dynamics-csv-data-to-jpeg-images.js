@@ -7,6 +7,8 @@ const {
     NUMBER_OF_OPERATIONS,
     TRAINING_DATA_USER_SESSION_FILES,
     JPEG_TRAINING_DATA_DEST_DIR,
+    TEST_DATA_USER_SESSION_FILES,
+    JPEG_TEST_DATA_DEST_DIR,
 } = require('../config/environment-variables');
 
 const handleMove = (ctx, { x, y }, { x: prevX, y: prevY }) => {
@@ -134,15 +136,15 @@ const createJpegImageFromMouseOperations = async (mouseOperations = [], destPath
 const main = async () => {
     const eventEmitter = new EventEmitter();
 
-    eventEmitter.on('create-image', async ({ number, user, session, mouseOperations }) => {
-        const imageFileName = `image-${number}.jpeg`;
-        const destDir = path.join(JPEG_TRAINING_DATA_DEST_DIR, user, session);
+    eventEmitter.on('create-image', async ({ number, user, isForTraining, session, mouseOperations }) => {
+        const imageFileName = `${session}-${number}.jpeg`;
+        const destDir = path.join(isForTraining ? JPEG_TRAINING_DATA_DEST_DIR : JPEG_TEST_DATA_DEST_DIR, user);
         fs.mkdirSync(destDir, { recursive: true });
         const imgPath = path.join(destDir, imageFileName);
         await createJpegImageFromMouseOperations(mouseOperations, imgPath);
     });
 
-    for (const { user, session, pathToFile } of TRAINING_DATA_USER_SESSION_FILES) {
+    for (const { user, isForTraining, session, pathToFile } of [...TRAINING_DATA_USER_SESSION_FILES, ...TEST_DATA_USER_SESSION_FILES]) {
         let chunkedMouseOperations = [];
         let number = 0;
 
@@ -153,6 +155,7 @@ const main = async () => {
             eventEmitter.emit('create-image', {
                 number,
                 user,
+                isForTraining,
                 session,
                 mouseOperations: chunkedMouseOperations,
             });

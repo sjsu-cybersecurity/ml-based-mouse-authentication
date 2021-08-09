@@ -37,7 +37,11 @@ const createEnvironmentVariables = () => {
     }
 
     return {
-        NUMBER_OF_OPERATIONS: process.env.NUMBER_OF_OPERATIONS || 100,
+        NUMBER_OF_OPERATIONS: process.env.NUMBER_OF_OPERATIONS || 500,
+        JPEG_IMAGE_WIDTH: 100,
+        JPEG_IMAGE_HEIGHT: 100,
+        JPEG_IMAGE_CHANNELS: 3,
+        LEGAL_USER: process.env.LEGAL_USER || 'user7',
         JPEG_TRAINING_DATA_DEST_DIR,
         TRAINING_DATA_DIR,
         TRAINING_DATA_USER_DIR,

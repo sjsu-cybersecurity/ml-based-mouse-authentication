@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 const { createCanvas } = require('canvas');
 const csvParser = require('csv-parser');
 const { EventEmitter } = require('events');
@@ -9,6 +10,8 @@ const {
     JPEG_TRAINING_DATA_DEST_DIR,
     TEST_DATA_USER_SESSION_FILES,
     JPEG_TEST_DATA_DEST_DIR,
+    JPEG_IMAGE_WIDTH,
+    JPEG_IMAGE_HEIGHT,
 } = require('../config/environment-variables');
 
 const handleMove = (ctx, { x, y }, { x: prevX, y: prevY }) => {
@@ -127,7 +130,8 @@ const createJpegImageFromMouseOperations = async (mouseOperations = [], destPath
             prev.y = y;
         }
         const jpegImageBuffer = canvas.toBuffer('image/jpeg');
-        fs.writeFileSync(destPath, jpegImageBuffer);
+        const resizedImageBuffer = await sharp(jpegImageBuffer).resize(JPEG_IMAGE_WIDTH, JPEG_IMAGE_HEIGHT).toBuffer();
+        fs.writeFileSync(destPath, resizedImageBuffer);
     } catch (err) {
         console.error(err.message, destPath);
     }

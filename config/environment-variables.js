@@ -52,6 +52,9 @@ const createEnvironmentVariables = () => {
         TEST_DATA_USER_DIR,
         TEST_DATA_USER_SESSION_FILES,
         ML_MODELS_DIR,
+        NUMBER_OF_TRAINING_DATA: 15300, // 0.85 * 18,000
+        NUMBER_OF_TEST_DATA: 2700, // 0.15 * 18,000
+        PROBABILITY_OF_DATA_AUGMENTATION: 0.5,
     };
 };
 

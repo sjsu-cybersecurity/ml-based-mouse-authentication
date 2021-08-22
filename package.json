@@ -6,6 +6,7 @@
   "scripts": {
     "build:clean": "node -e \"require('fs-extra').emptyDir('dist');\"",
     "build:jpeg-images": "node scripts/convert-mouse-dynamics-csv-data-to-jpeg-images.js",
+    "build:augment-images": "node scripts/augment-data-set.js",
     "build": "npm run build:clean && npm run build:jpeg-images",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"

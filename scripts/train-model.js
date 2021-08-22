@@ -9,6 +9,8 @@ const {
     JPEG_IMAGE_HEIGHT,
     JPEG_IMAGE_CHANNELS,
     LEGAL_USER,
+    NUMBER_OF_TRAINING_DATA,
+    NUMBER_OF_TEST_DATA,
 } = require('../config/environment-variables');
 
 const LEARNING_RATE = 0.01;
@@ -122,6 +124,7 @@ const train = async (model) => {
     const [trainXs, trainYs] = createDataSet(JPEG_TRAINING_DATA_DEST_DIR);
     const [testXs, testYs] = createDataSet(JPEG_TEST_DATA_DEST_DIR);
     console.log('Start model training');
+    /*
     await model.fit(trainXs, trainYs, {
         validationData: [testXs, testYs],
         batchSize: BATCH_SIZE,
@@ -130,6 +133,7 @@ const train = async (model) => {
     });
     fs.mkdirSync(ML_MODELS_DIR, { recursive: true });
     await model.save(`file:///${ML_MODELS_DIR}/${LEGAL_USER}`);
+     */
 };
 
 const main = async () => {

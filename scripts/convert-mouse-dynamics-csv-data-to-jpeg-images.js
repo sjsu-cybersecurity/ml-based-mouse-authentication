@@ -140,26 +140,23 @@ const createJpegImageFromMouseOperations = async (mouseOperations = [], destPath
 const main = async () => {
     const eventEmitter = new EventEmitter();
 
-    eventEmitter.on('create-image', async ({ number, user, isForTraining, session, mouseOperations }) => {
+    eventEmitter.on('create-image', async ({ number, destDir, session, mouseOperations }) => {
         const imageFileName = `${session}-${number}.jpeg`;
-        const destDir = path.join(isForTraining ? JPEG_TRAINING_DATA_DEST_DIR : JPEG_TEST_DATA_DEST_DIR, user);
         fs.mkdirSync(destDir, { recursive: true });
         const imgPath = path.join(destDir, imageFileName);
         await createJpegImageFromMouseOperations(mouseOperations, imgPath);
     });
 
-    for (const { user, isForTraining, session, pathToFile } of [...TRAINING_DATA_USER_SESSION_FILES, ...TEST_DATA_USER_SESSION_FILES]) {
+    const createCsvStream = (user, session, pathToFile, destDir) => {
         let chunkedMouseOperations = [];
         let number = 0;
-
-        const handleCsvDataStream = async data => {
+        const handleCsvDataStream = (data) => {
             if (data && chunkedMouseOperations.length < NUMBER_OF_OPERATIONS) {
                 return chunkedMouseOperations.push(data);
             }
             eventEmitter.emit('create-image', {
                 number,
-                user,
-                isForTraining,
+                destDir,
                 session,
                 mouseOperations: chunkedMouseOperations,
             });
@@ -169,7 +166,17 @@ const main = async () => {
         fs.createReadStream(pathToFile)
             .pipe(csvParser())
             .on('data', handleCsvDataStream)
-            .on('end', handleCsvDataStream);
+            .on('end', handleCsvDataStream)
+    };
+
+    for (const { user, session, pathToFile } of TRAINING_DATA_USER_SESSION_FILES) {
+        const destDir = `${JPEG_TRAINING_DATA_DEST_DIR}/${user}`;
+        createCsvStream(user, session, pathToFile, destDir)
+    }
+
+    for (const { user, session, pathToFile } of TEST_DATA_USER_SESSION_FILES) {
+        const destDir = `${JPEG_TEST_DATA_DEST_DIR}/${user}`;
+        createCsvStream(user, session, pathToFile, destDir)
     }
 };
 

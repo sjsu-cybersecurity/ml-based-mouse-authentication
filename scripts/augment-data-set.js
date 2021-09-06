@@ -12,14 +12,14 @@ const rotateImageByDegrees = async (imageBuffer, degrees) =>
     await sharp(imageBuffer).rotate(degrees).toBuffer();
 
 const getRandomDegrees = () => {
-    const rotateDegrees = [25, 90, 180, 270];
+    const rotateDegrees = [90, 180, 270];
     return rotateDegrees[Math.floor(Math.random() * rotateDegrees.length)]
 };
 
 const augmentDataset = async (pathToDir, maxSize) => {
     try {
         const users = fs.readdirSync(pathToDir);
-        for await (const user of users) {
+        for (const user of users) {
             const images = fs.readdirSync(`${pathToDir}/${user}`);
             let numberOfDataset = images.length;
             console.log(`
@@ -54,7 +54,7 @@ Started augmenting ${user}'s data in ${pathToDir}
                 numberOfDataset += 1;
             }
             console.log(`
-Completed augmeting ${user}'s data in ${pathToDir}
+Completed augmenting ${user}'s data in ${pathToDir}
 - Final size: ${numberOfDataset} 
             `);
         }
@@ -63,9 +63,36 @@ Completed augmeting ${user}'s data in ${pathToDir}
     }
 };
 
+const augmentDatasetByFlipAndFlop = async (pathToDir) => {
+    const users = fs.readdirSync(pathToDir);
+    for (const user of users) {
+        const images = fs.readdirSync(`${pathToDir}/${user}`);
+        for (const image of images) {
+            const imageName = image.split('.')[0];
+            const imageBuffer = fs.readFileSync(`${pathToDir}/${user}/${image}`);
+            const flippedImageBuffer = await sharp(imageBuffer).flip().toBuffer();
+            fs.writeFileSync(
+                `${pathToDir}/${user}/${imageName}-aug-flip.jpeg`,
+                flippedImageBuffer,
+            );
+            const floppedImageBuffer = await sharp(imageBuffer).flop().toBuffer();
+            fs.writeFileSync(
+                `${pathToDir}/${user}/${imageName}-aug-flop.jpeg`,
+                floppedImageBuffer,
+            );
+        }
+    }
+};
+
 const main = async () => {
-    await augmentDataset(JPEG_TRAINING_DATA_DEST_DIR, NUMBER_OF_TRAINING_DATA);
-    await augmentDataset(JPEG_TEST_DATA_DEST_DIR, NUMBER_OF_TEST_DATA);
+    await Promise.all([
+        /*
+        augmentDatasetByFlipAndFlop(JPEG_TRAINING_DATA_DEST_DIR),
+        augmentDatasetByFlipAndFlop(JPEG_TEST_DATA_DEST_DIR),
+         */
+        augmentDataset(JPEG_TRAINING_DATA_DEST_DIR, NUMBER_OF_TRAINING_DATA),
+        augmentDataset(JPEG_TEST_DATA_DEST_DIR, NUMBER_OF_TEST_DATA),
+    ]);
 };
 
 main();

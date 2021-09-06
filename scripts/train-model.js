@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const tf = require('@tensorflow/tfjs-node');
@@ -12,6 +13,7 @@ const {
     NUMBER_OF_TRAINING_DATA,
     NUMBER_OF_TEST_DATA,
 } = require('../config/environment-variables');
+const { getMemoryUsage } = require('./utils');
 
 const LEARNING_RATE = 0.01;
 const BETA1 = 0.9;
@@ -87,53 +89,85 @@ const getModel = () => {
     return model;
 };
 
-const createDataSet = (pathToDirectory = JPEG_TRAINING_DATA_DEST_DIR) => {
+const createDataSet = (pathToDirectory = JPEG_TRAINING_DATA_DEST_DIR, dataSize) => {
     const users = fs.readdirSync(JPEG_TRAINING_DATA_DEST_DIR);
     if (!users.includes(LEGAL_USER)) {
         throw new Error('invalid user');
     }
-    const data = [];
-    const labels = [];
-    let legalUserDataCount = 0;
-    let illegalUserDataCount = 0;
+
+    let userImageTupleList = [];
+
     for (const user of users) {
         const images = fs.readdirSync(path.join(pathToDirectory, user))
         for (const image of images) {
-            const imageBuffer = fs.readFileSync(path.join(pathToDirectory, user, image));
-            const label = user === LEGAL_USER ? 0 : 1;
-            user === LEGAL_USER ? legalUserDataCount++ : illegalUserDataCount++;
-            data.push(tf.node.decodeJpeg(imageBuffer));
-            labels.push(label);
+            const relativePath = `${user}/${image}`;
+            userImageTupleList.push([
+                relativePath,
+                LEGAL_USER === user ? 0 : 1,
+            ]);
         }
     }
+
+    userImageTupleList = _.shuffle(userImageTupleList)
+
+    if (dataSize && userImageTupleList.length < 2 * dataSize) {
+        throw Error('images are less than the provided dataSize');
+    }
+
+    let countOfLegalUsers = 0;
+    let countOfIllegalUsers = 0;
+    const data = [];
+    const labels = [];
+
+    while (userImageTupleList.length > 0) {
+        const [imagePath, label] = userImageTupleList.pop();
+        if (dataSize && countOfLegalUsers >= dataSize && countOfIllegalUsers >= dataSize) {
+            break;
+        }
+        if (dataSize && label === 0 && countOfLegalUsers >= dataSize) {
+            continue;
+        }
+        if (dataSize && label === 1 && countOfIllegalUsers >= dataSize) {
+            continue;
+        }
+        const imageBuffer = fs.readFileSync(`${pathToDirectory}/${imagePath}`);
+        data.push(tf.node.decodeJpeg(imageBuffer));
+        labels.push(label);
+        label === 0 ? countOfLegalUsers++ : countOfIllegalUsers++;
+    }
+
+    const xs = tf.stack(data);
+    const yx = tf.oneHot(tf.tensor1d(labels, 'int32'), 2);
+
     console.log(`
 _________________________________________________________________
 Data Set Dir: ${pathToDirectory}
 Legal User: ${LEGAL_USER}
-Size of User Data: ${legalUserDataCount + illegalUserDataCount}
-Size of Legal User Data: ${legalUserDataCount}
-Size of Illegal User Data: ${illegalUserDataCount}
+Size of Legal Users: ${countOfLegalUsers}
+Size of Illegal Users: ${countOfIllegalUsers}
+Memory Usage: ${getMemoryUsage()}MB
 _________________________________________________________________
     `);
-    const xs = tf.stack(data);
-    const ys = tf.oneHot(tf.tensor1d(labels, 'int32'), 2);
-    return [xs, ys];
+    return [
+        xs,
+        yx,
+    ];
 };
 
 const train = async (model) => {
-    const [trainXs, trainYs] = createDataSet(JPEG_TRAINING_DATA_DEST_DIR);
-    const [testXs, testYs] = createDataSet(JPEG_TEST_DATA_DEST_DIR);
+    // Returns T0 and T1 where T0 + T1 = 30,600
+    const [trainXs, trainYs] = createDataSet(JPEG_TRAINING_DATA_DEST_DIR, NUMBER_OF_TRAINING_DATA);
+    // Returns T0' and T1' where T0' + T1' = 5,400
+    const [testXs, testYs] = createDataSet(JPEG_TEST_DATA_DEST_DIR, NUMBER_OF_TEST_DATA);
     console.log('Start model training');
-    /*
     await model.fit(trainXs, trainYs, {
         validationData: [testXs, testYs],
         batchSize: BATCH_SIZE,
         epochs: 10,
-        shuffle: true,
+        // shuffle: true,
     });
     fs.mkdirSync(ML_MODELS_DIR, { recursive: true });
     await model.save(`file:///${ML_MODELS_DIR}/${LEGAL_USER}`);
-     */
 };
 
 const main = async () => {

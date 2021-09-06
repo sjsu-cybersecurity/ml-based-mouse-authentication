@@ -6,7 +6,8 @@
   "scripts": {
     "build:clean": "node -e \"require('fs-extra').emptyDir('dist');\"",
     "build:jpeg-images": "node scripts/convert-mouse-dynamics-csv-data-to-jpeg-images.js",
-    "build": "npm run build:clean && npm run build:jpeg-images",
+    "build:augment-images": "node scripts/augment-data-set.js",
+    "build:train-model": "node scripts/train-model.js",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,9 +25,12 @@
     "csv-parser": "^3.0.0",
     "csvtojson": "^2.0.10",
     "eslint": "^7.31.0",
-    "fs-extra": "^10.0.0"
+    "fs-extra": "^10.0.0",
+    "sharp": "^0.28.3"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^3.8.0",
+    "@tensorflow/tfjs-node": "^3.8.0",
     "canvas": "^2.8.0",
     "lodash": "^4.17.21"
   }

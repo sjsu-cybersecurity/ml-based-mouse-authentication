@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 const { createCanvas } = require('canvas');
 const csvParser = require('csv-parser');
 const { EventEmitter } = require('events');
@@ -7,6 +8,10 @@ const {
     NUMBER_OF_OPERATIONS,
     TRAINING_DATA_USER_SESSION_FILES,
     JPEG_TRAINING_DATA_DEST_DIR,
+    TEST_DATA_USER_SESSION_FILES,
+    JPEG_TEST_DATA_DEST_DIR,
+    JPEG_IMAGE_WIDTH,
+    JPEG_IMAGE_HEIGHT,
 } = require('../config/environment-variables');
 
 const handleMove = (ctx, { x, y }, { x: prevX, y: prevY }) => {
@@ -125,7 +130,8 @@ const createJpegImageFromMouseOperations = async (mouseOperations = [], destPath
             prev.y = y;
         }
         const jpegImageBuffer = canvas.toBuffer('image/jpeg');
-        fs.writeFileSync(destPath, jpegImageBuffer);
+        const resizedImageBuffer = await sharp(jpegImageBuffer).resize(JPEG_IMAGE_WIDTH, JPEG_IMAGE_HEIGHT).toBuffer();
+        fs.writeFileSync(destPath, resizedImageBuffer);
     } catch (err) {
         console.error(err.message, destPath);
     }
@@ -134,25 +140,23 @@ const createJpegImageFromMouseOperations = async (mouseOperations = [], destPath
 const main = async () => {
     const eventEmitter = new EventEmitter();
 
-    eventEmitter.on('create-image', async ({ number, user, session, mouseOperations }) => {
-        const imageFileName = `image-${number}.jpeg`;
-        const destDir = path.join(JPEG_TRAINING_DATA_DEST_DIR, user, session);
+    eventEmitter.on('create-image', async ({ number, destDir, session, mouseOperations }) => {
+        const imageFileName = `${session}-${number}.jpeg`;
         fs.mkdirSync(destDir, { recursive: true });
         const imgPath = path.join(destDir, imageFileName);
         await createJpegImageFromMouseOperations(mouseOperations, imgPath);
     });
 
-    for (const { user, session, pathToFile } of TRAINING_DATA_USER_SESSION_FILES) {
+    const createCsvStream = (user, session, pathToFile, destDir) => {
         let chunkedMouseOperations = [];
         let number = 0;
-
-        const handleCsvDataStream = async data => {
+        const handleCsvDataStream = (data) => {
             if (data && chunkedMouseOperations.length < NUMBER_OF_OPERATIONS) {
                 return chunkedMouseOperations.push(data);
             }
             eventEmitter.emit('create-image', {
                 number,
-                user,
+                destDir,
                 session,
                 mouseOperations: chunkedMouseOperations,
             });
@@ -162,7 +166,17 @@ const main = async () => {
         fs.createReadStream(pathToFile)
             .pipe(csvParser())
             .on('data', handleCsvDataStream)
-            .on('end', handleCsvDataStream);
+            .on('end', handleCsvDataStream)
+    };
+
+    for (const { user, session, pathToFile } of TRAINING_DATA_USER_SESSION_FILES) {
+        const destDir = `${JPEG_TRAINING_DATA_DEST_DIR}/${user}`;
+        createCsvStream(user, session, pathToFile, destDir)
+    }
+
+    for (const { user, session, pathToFile } of TEST_DATA_USER_SESSION_FILES) {
+        const destDir = `${JPEG_TEST_DATA_DEST_DIR}/${user}`;
+        createCsvStream(user, session, pathToFile, destDir)
     }
 };
 

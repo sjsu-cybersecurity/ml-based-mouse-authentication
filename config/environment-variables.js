@@ -35,7 +35,7 @@ const createEnvironmentVariables = () => {
     const TRAINING_DATA_USER_SESSION_FILES = createUserSessionData(TRAINING_DATA_USER_DIR);
     const TEST_DATA_USER_SESSION_FILES = createUserSessionData(TEST_DATA_USER_DIR)
 
-    const NUMBER_OF_DATA = process.env.NUMBER_OF_DATA || 20000;
+    const NUMBER_OF_DATA = process.env.NUMBER_OF_DATA || 5000;
 
     return {
         NUMBER_OF_OPERATIONS: process.env.NUMBER_OF_OPERATIONS || 100,
@@ -53,9 +53,10 @@ const createEnvironmentVariables = () => {
         TEST_DATA_USER_SESSION_FILES,
         ML_MODELS_DIR,
         NUMBER_OF_DATA,
-        NUMBER_OF_TRAINING_DATA: Math.floor(0.50 * NUMBER_OF_DATA),
-        NUMBER_OF_TEST_DATA: Math.floor(0.50 * NUMBER_OF_DATA),
+        NUMBER_OF_TRAINING_DATA: Math.floor(0.85 * NUMBER_OF_DATA),
+        NUMBER_OF_TEST_DATA: Math.floor(0.15 * NUMBER_OF_DATA),
         PROBABILITY_OF_DATA_AUGMENTATION: 0.5,
+        IGNORE_RATIO: true,
     };
 };
 

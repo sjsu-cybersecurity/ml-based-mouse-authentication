@@ -12,6 +12,7 @@ const {
     LEGAL_USER,
     NUMBER_OF_TRAINING_DATA,
     NUMBER_OF_TEST_DATA,
+    IGNORE_RATIO,
 } = require('../config/environment-variables');
 const { getMemoryUsage } = require('./utils');
 
@@ -155,10 +156,12 @@ _________________________________________________________________
 };
 
 const train = async (model) => {
+    const trainDataSize = IGNORE_RATIO ? undefined : NUMBER_OF_TRAINING_DATA;
+    const testDataSize = IGNORE_RATIO ? undefined : NUMBER_OF_TEST_DATA;
     // Returns T0 and T1 where T0 + T1 = 30,600
-    const [trainXs, trainYs] = createDataSet(JPEG_TRAINING_DATA_DEST_DIR, NUMBER_OF_TRAINING_DATA);
+    const [trainXs, trainYs] = createDataSet(JPEG_TRAINING_DATA_DEST_DIR, trainDataSize);
     // Returns T0' and T1' where T0' + T1' = 5,400
-    const [testXs, testYs] = createDataSet(JPEG_TEST_DATA_DEST_DIR, NUMBER_OF_TEST_DATA);
+    const [testXs, testYs] = createDataSet(JPEG_TEST_DATA_DEST_DIR, testDataSize);
     console.log('Start model training');
     await model.fit(trainXs, trainYs, {
         validationData: [testXs, testYs],

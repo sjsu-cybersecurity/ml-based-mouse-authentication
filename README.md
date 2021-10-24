@@ -97,7 +97,6 @@ be mismatched, and the train command will fail.
 ```bash
 IGNORE_RATI=true NUMBER_OF_DATA=30000 npm run build:train-model
 ```
-.
 
 ##### 4. Clean up
 If you want to re-run commands to re-create JPEG images or re-train model,

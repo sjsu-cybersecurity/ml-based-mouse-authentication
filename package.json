@@ -8,6 +8,7 @@
     "build:jpeg-images": "node scripts/convert-mouse-dynamics-csv-data-to-jpeg-images.js",
     "build:augment-images": "node scripts/augment-data-set.js",
     "build:train-model": "node scripts/train-model.js",
+    "build:train-model-lstm": "node scripts/train-model-lstm.js",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

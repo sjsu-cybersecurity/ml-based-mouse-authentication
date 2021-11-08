@@ -8,7 +8,7 @@ using mouse dynamics.
 The repository contains a submodule [Mouse-Dynamics-Challenge][submodule].
 Make sure you include `--recurse-submodules` flag when running the `git clone` command to download the repository.
 ```bash
-$ git clone --recurse-submodules https://github.com/sjsu-cybersecurity/ai-powered-browser-lock-extension.git
+$ git clone --recurse-submodules https://github.com/sjsu-cybersecurity/ml-based-mouse-authentication.git
 $ cd ai-powered-browser-lock-extension
 $ npm install
 ```

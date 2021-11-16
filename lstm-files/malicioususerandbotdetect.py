@@ -15,8 +15,8 @@ from tensorflow.keras.optimizers import Adam
 
 inputs=Input((100,9))
 #step=GRU(6)(inputs)
-step=LSTM(6)(inputs)
-#step=Bidirectional(LSTM(6))(inputs)
+#step=LSTM(6)(inputs)
+step=Bidirectional(LSTM(6))(inputs)
 #step=Conv1D(6,kernel_size=5)(inputs)
 pred=Dense(2)(step)
 

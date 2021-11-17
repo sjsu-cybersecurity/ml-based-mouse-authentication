@@ -1,9 +1,6 @@
 import numpy as np
 import pandas as pd
 
-#session_data = pd.read_csv("session_labels.csv")
-#session_data_array= np.array(session_data)
-
 X_val=np.load('mouse_movement_features.npy')
 Y_val=np.load('mouse_movement_labels.npy')
 

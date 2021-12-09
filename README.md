@@ -95,7 +95,7 @@ provide the same value for the `NUMBER_OF_DATA` flag. Otherwise, the dataset rat
 be mismatched, and the train command will fail.
 
 ```bash
-IGNORE_RATI=true NUMBER_OF_DATA=30000 npm run build:train-model
+IGNORE_RATIO=true NUMBER_OF_DATA=30000 npm run build:train-model
 ```
 
 ##### 4. Clean up
